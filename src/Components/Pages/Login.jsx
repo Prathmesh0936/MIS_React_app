@@ -1,84 +1,91 @@
-import React, { useState } from 'react'
-import {
-  MDBContainer,
-  MDBCol,
-  MDBRow,
-  MDBBtn,
-  MDBInput,
-  MDBCheckbox
-}
-from 'mdb-react-ui-kit';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import '../css/Login.css';
 
-export default function Login() {
-
-  const [password_hash, setPasswordValue] = useState('');
-  const [email, setEmailValue] = useState('');
-
-  const setPassword = (e) => {
-    setPasswordValue(e.target.value);
-  };
-
-  const setEmail = (e) => {
-    setEmailValue(e.target.value);
-  };
+function Login() {
+  const [email, setEmail] = useState('');
+  const [password_hash, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(email, password_hash);
+    setError('');
+    setLoading(true);
 
-    const data = {
-      email: email,
-      password_hash: password_hash
-    };
+    try {
+      const res = await axios.post(
+        'http://localhost:8080/api/auth/login',
+        { email, password_hash },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
 
-    try{
-      const response = await axios.post('https://mis-production-2e14.up.railway.app/api/auth/login', data);
-      console.log(response.data);
-      if(response.date){
-        alert("Invalid credentials");
-      }else { 
-        alert("Login successful");
+
+      // ✅ Either check for status or exact string
+      if (res.status === 200 || res.data === 'User Logged In Successfully!!!') {
+        localStorage.setItem('email', email);
+        navigate('/dashboard'); // ✅ Redirect to dashboard
+      } else {
+        throw new Error('Unexpected login response');
       }
-    } catch (error){
-      console.log(error);
+    } catch (err) {
+      console.error('Login failed:', err.response || err);
+      setError(
+        err.response?.data?.message || 'Login failed. Please try again.'
+      );
+    } finally {
+      setLoading(false);
     }
-
   };
+
+  const handleForgotPassword = () => {
+    navigate('/forgotpassword');
+  };
+
   return (
+    <div className="login-page">
+      <form className="login-card" onSubmit={handleSubmit}>
+        <h2>Login</h2>
+        <div className="input-group">
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="Enter Your Email"
+            required
+          />
+        </div>
+        <div className="input-group">
+          <label>Password</label>
+          <input
+            type="password"
+            value={password_hash}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Password"
+            required
+          />
+        </div>
+        {error && <div className="error">{error}</div>}
+        <button type="submit" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+        <button
+          type="button"
+          className="forgot-password-btn"
+          onClick={handleForgotPassword}
+        >
+          Forgot Password?
+        </button>
 
-    <form onSubmit={handleSubmit}>
-    <MDBContainer fluid className="p-3 my-5">
-
-      <MDBRow>
-
-        <MDBCol col='10' md='6'>
-          <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg" class="img-fluid" alt="Phone image" />
-        </MDBCol>
-
-        <MDBCol col='4' md='6'>
-
-
-          <MDBInput wrapperClass='mb-4' id='formControlLg' type='email' size="lg" placeholder='Email address' value={email} onChange={setEmail}/>
-          <MDBInput wrapperClass='mb-4' id='formControlLg' type='password' size="lg" placeholder='Password' value={password_hash} onChange={setPassword}/>
-
-
-          <div className="d-flex justify-content-between mx-4 mb-4">
-            <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me' />
-            <a href="!#">Forgot password?</a>
-          </div>
-
-          <MDBBtn className="mb-4 w-100" size="lg">Login  </MDBBtn>
-
-          <div className="divider d-flex align-items-center my-4">
-            <p className="text-center fw-bold mx-3 mb-0">don't hava an account <a href="Register">Register</a></p>
-          </div>
-
-        </MDBCol>
-
-      </MDBRow>
-
-    </MDBContainer>
-    </form>
+        <div className="register-link">
+          Not Registered? <a href="/register">Register Now</a>
+        </div>
+      </form>
+    </div>
   );
 }
+
+export default Login;

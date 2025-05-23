@@ -1,0 +1,151 @@
+/* Layout */
+.home-container {
+  display: flex;
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 4.4375rem;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background: #1e1e2f;
+  color: white;
+  padding: 1rem;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.sidebar-header {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-nav li {
+  margin-bottom: 15px;
+}
+
+.sidebar-nav a {
+  color: #ccc;
+  text-decoration: none;
+  font-weight: 500;
+  display: block;
+  padding: 10px 15px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-nav a:hover {
+  background-color: #2c2c40;
+  color: #fff;
+}
+
+.sidebar-nav a.active {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Main Content */
+.main-content {
+  margin-left: 250px; /* Width of sidebar */
+  margin-top: 60px;   /* Height of header */
+  padding: 2rem;
+  background: #f4f6f8;
+  min-height: calc(100vh - 60px);
+  box-sizing: border-box;
+}
+
+/* Header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 250px;
+  right: 0;
+  height: 60px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  border-bottom: 1px solid #ddd;
+  z-index: 999;
+}
+
+.logout-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.logout-link:hover {
+  text-decoration: underline;
+}
+
+/* Cards (if using on dashboard) */
+.dashboard-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.card {
+  flex: 1;
+  min-width: 200px;
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.card-icon {
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+
+.card-data h3 {
+  margin: 0;
+}
+
+.card.blue { border-left: 4px solid #2196f3; }
+.card.sky { border-left: 4px solid #03a9f4; }
+.card.green { border-left: 4px solid #4caf50; }
+.card.pink { border-left: 4px solid #e91e63; }
+
+/* Section Form Styles */
+.form-section {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Group Management Form */
+.group-input {
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.add-group-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

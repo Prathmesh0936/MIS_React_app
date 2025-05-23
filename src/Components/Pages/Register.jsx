@@ -1,96 +1,116 @@
-import React, { useState } from 'react'
-
-import {
-  MDBBtn,
-  MDBContainer,
-  MDBRow,
-  MDBCol,
-  MDBCard,
-  MDBCardBody,
-  MDBInput,
-}
-from 'mdb-react-ui-kit';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import '../css/Login.css'; // Reusing styles
 
-export default function Register() {
+function Register() {
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    password: '',
+    role: ['USER'], // Backend expects 'role'
+  });
 
- 
-    const [register, setRegister] = useState({
-      full_name: "",
-      email: "",
-      password_hash: "",
-    });
-  
-    const handleChange = (e) => {
-      setRegister({
-        ...register,
-        [e.target.name]: e.target.value
-      });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    const registerPayload = {
+      full_name: `${formData.first_name} ${formData.last_name}`,
+      email: formData.email,
+      password_hash: formData.password,
+      role: formData.role,
     };
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      console.log(register);
+    try {
+      await axios.post('http://localhost:8080/api/auth/register', registerPayload);
+      setSuccess('Registered successfully! Redirecting to login...');
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+    }
+  };
 
-      try{
-        const response = await axios.post('https://mis-production-2e14.up.railway.app/api/auth/register', register);
-        console.log(response.data);
-        alert("User addes successfully");
-      } catch (error){
-        console.log(error);
-      }
-    };
-  
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-       <MDBContainer fluid className='p-4'>
+    <div className="login-page">
+      <form className="login-card" onSubmit={handleSubmit}>
+        <h2>Register</h2>
 
-<MDBRow>
-
-  <MDBCol md='6' className='text-center text-md-start d-flex flex-column justify-content-center'>
-
-    <h1 className="my-5 display-3 fw-bold ls-tight px-3">
-      The best offer <br />
-      <span className="text-primary">for your business</span>
-    </h1>
-
-    <p className='px-3' style={{color: 'hsl(217, 10%, 50.8%)'}}>
-     
-    </p>
-
-  </MDBCol>
-
-  <MDBCol md='6'>
-
-    <MDBCard className='my-5'>
-      <MDBCardBody className='p-5'>
-
-        <MDBRow>
-          <MDBInput wrapperClass='mb-4' placeholder='FullName' id='form1' name="full_name" value={register.full_name} onChange={handleChange}/>
-        </MDBRow>
-
-        <MDBInput wrapperClass='mb-4' placeholder='Email' id='form1' type='email' name="email" value={register.email} onChange={handleChange}/>
-        <MDBInput wrapperClass='mb-4' placeholder='Password' id='form1' type='password' name="password_hash" value={register.password_hash} onChange={handleChange}/>
-
-        <MDBBtn className='w-100 mb-4' size='md'>Register</MDBBtn>
-
-        <div className="text-center">
-
-          <p>Already Hava A Account? <a href="/">Login</a></p>
-
-
+        <div className="input-group">
+          <label>First Name</label>
+          <input
+            type="text"
+            name="first_name"
+            value={formData.first_name}
+            onChange={handleChange}
+            placeholder="Enter first name"
+            required
+          />
         </div>
 
-      </MDBCardBody>
-    </MDBCard>
+        <div className="input-group">
+          <label>Last Name</label>
+          <input
+            type="text"
+            name="last_name"
+            value={formData.last_name}
+            onChange={handleChange}
+            placeholder="Enter last name"
+            required
+          />
+        </div>
 
-  </MDBCol>
+        <div className="input-group">
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter your email"
+            required
+          />
+        </div>
 
-</MDBRow>
+        <div className="input-group">
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Password"
+            required
+          />
+        </div>
 
-</MDBContainer>
+        {error && <div className="error">{error}</div>}
+        {success && <div className="success">{success}</div>}
+
+        <button type="submit">Register</button>
+
+        <div className="register-link">
+          Already have an account? <a href="/login">Login</a>
+        </div>
       </form>
     </div>
-  )
+  );
 }
+
+export default Register;
